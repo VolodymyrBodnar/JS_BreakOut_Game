@@ -17,7 +17,7 @@ var dx = 4;
 var dy = -dx;
 
 // Bricks
-var bricksColor = [180, 0, 210]
+var bricksColor = [180, 256, 210]
 var brickRowCount = 3;
 var brickColumnCount = 5;
 var brickWidth = 75;
@@ -68,7 +68,7 @@ var leftPressed = false;
 
 function drawPaddle() {
     ctx.beginPath();
-    ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
+    ctx.rect(paddleX, canvas.height-2*paddleHeight, paddleWidth, paddleHeight);
     ctx.fillStyle = 'rgb(' + String(bricksColor[0]) +','+ String(bricksColor[1])+',' + String(bricksColor[2]) +')';
     ctx.fill();
     ctx.closePath();
@@ -92,6 +92,28 @@ function keyUpHandler(e) {
     }
 }
 
+function changeColor(){
+
+  if(bricksColor[0] > 0 && bricksColor[2] < 256 ){
+  bricksColor[0] -= 220;
+  bricksColor[2] += 220;
+  }
+}
+
+function changeSpeed(){
+    dy -= 1/(score+1);
+    dx -= 1/(score+1);
+}
+
+function changeSize() {
+  if(paddleWidth < 120){
+    paddleWidth +=  20*(1/(score+1)) +30*(140/paddleWidth);
+    if(paddleWidth > 160){
+      paddleWidth = 160
+    }
+  }
+}
+
 function collisionDetection() {
     for(var c=0; c<brickColumnCount; c++) {
         for(var r=0; r<brickRowCount; r++) {
@@ -101,18 +123,9 @@ function collisionDetection() {
                     dy = -dy;
                     b.status = 0;
                     score++;
-                    if(paddleWidth < 120){
-                      paddleWidth +=  20*(1/(score+1)) +30*(140/paddleWidth);
-                      if(paddleWidth > 160){
-                        paddleWidth = 160
-                      }
-                    }
-                    if(bricksColor[0] > 0 && bricksColor[2] < 256 ){
-                    bricksColor[0] -= 160;
-                    bricksColor[2] += 160;
-                    }
-                    dy -= 1/(score+1);
-                    dx -= 1/(score+1);
+                    changeColor();
+                    changeSize();
+                    changeSpeed();
                     if(score == brickRowCount*brickColumnCount) {
                         alert("YOU WIN, CONGRATULATIONS!");
                         document.location.reload();
@@ -149,7 +162,7 @@ function draw() {
        dy = -dy;
        paddleWidth += 20;
    }
-   else if(y + dy > canvas.height-paddleHeight/2 -radius) {
+   else if(y + dy > canvas.height-paddleHeight*3/2 -radius) {
        if(x > paddleX && x < paddleX + paddleWidth) {
            dy += 1/(score+1);
            dx += 1/(score+1);
